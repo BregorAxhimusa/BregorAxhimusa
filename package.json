@@ -2,7 +2,9 @@
   "name": "bregoraxhimusa-profile",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24" },
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "generate": "node scripts/generate.ts",
     "portrait": "node scripts/portrait.ts",
@@ -11,7 +13,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
-    "sharp": "^0.34.0",
+    "sharp": "^0.35.5",
     "typescript": "^5.9.0"
   }
 }

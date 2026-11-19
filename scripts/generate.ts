@@ -6,7 +6,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { fetchContributions } from './github.ts';
 import { computeStats, dateInZone } from './stats.ts';
-import { renderHeader, renderHeatmap, renderPortrait, renderStack, renderStats, type StackGroup } from './render.ts';
+import { renderHeader, renderHeatmap, renderStack, renderStats, type StackGroup } from './render.ts';
 import { themes } from './theme.ts';
 
 const LOGIN = 'BregorAxhimusa';
@@ -42,8 +42,7 @@ const stats = computeStats(counts, dateInZone(now));
 const portrait = await readFile(new URL('portrait.txt', assets), 'utf8');
 
 for (const theme of themes) {
-  await write(`header-${theme.name}.svg`, renderHeader(theme, NAME, ROLE, LOCATION));
-  await write(`portrait-${theme.name}.svg`, renderPortrait(theme, portrait));
+  await write(`header-${theme.name}.svg`, renderHeader(theme, NAME, ROLE, LOCATION, portrait));
   await write(`contributions-${theme.name}.svg`, renderHeatmap(theme, stats));
   await write(`stats-${theme.name}.svg`, renderStats(theme, stats));
   await write(`stack-${theme.name}.svg`, renderStack(theme, STACK));

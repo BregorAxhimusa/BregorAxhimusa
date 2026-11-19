@@ -1,11 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/header-dark.svg">
-  <img src="assets/header-light.svg" width="100%" alt="bregor@github ~ $ whoami: Bregor Axhimusa, Full-Stack Engineer: Web, Mobile and Backend, Prishtinë, Kosovo">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/portrait-dark.svg">
-  <img src="assets/portrait-light.svg" width="100%" alt="ASCII portrait of Bregor Axhimusa">
+  <img src="assets/header-light.svg" width="100%" alt="bregor@github ~ $ whoami: Bregor Axhimusa, Full-Stack Engineer: Web, Mobile and Backend, Prishtinë, Kosovo, next to an ASCII portrait">
 </picture>
 
 <picture>

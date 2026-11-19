@@ -53,4 +53,4 @@ export const CHAR = 0.6;
 export const RAMP = ' .-:+=*%#@';
 export const COVERAGE = [0, 0.051, 0.065, 0.082, 0.118, 0.129, 0.156, 0.208, 0.256, 0.299];
 // Portrait grid: one glyph per cell, font size and line height in SVG units.
-export const PORTRAIT = { cols: 140, size: 8.5, lineHeight: 9.4 };
+export const PORTRAIT = { cols: 64, size: 6.8, lineHeight: 7.5 };

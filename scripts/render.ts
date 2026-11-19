@@ -61,22 +61,8 @@ function cursor(t: Theme, x: number, y: number, size = 15): string {
   return `<rect class="cur" x="${x}" y="${y - size * 0.8}" width="${size * CHAR}" height="${size}" fill="${t.accent}"/>`;
 }
 
-export function renderHeader(t: Theme, name: string, role: string, location: string): string {
-  const size = 15;
-  const promptWidth = 'bregor@github ~ $ '.length * size * CHAR;
-  const body = [
-    prompt(PAD, 76, 'whoami', size),
-    `<text x="${PAD}" y="134" font-size="40" class="b">${esc(name)}</text>`,
-    `<text x="${PAD}" y="172" font-size="20">${esc(role)}</text>`,
-    `<text x="${PAD}" y="204" font-size="16" class="m" xml:space="preserve"><tspan class="a">@</tspan> ${esc(location)}</text>`,
-    prompt(PAD, 252, '', size),
-    cursor(t, PAD + promptWidth, 252, size),
-    mark(t, WIDTH - PAD - 200, 82, 130),
-  ].join('\n');
-  return frame(t, 284, 'bregor@github: ~', `${name}, ${role}, ${location}`, body);
-}
-
-export function renderPortrait(t: Theme, ascii: string): string {
+// Glyph rows of the ASCII portrait, left edge at x and first baseline at top.
+function portrait(t: Theme, ascii: string, x: number, top: number): string {
   // portrait.txt is ink on paper; on the dark card each subject glyph becomes
   // the one with the opposite coverage, so bright skin lights up and dark hair
   // goes sparse. The backdrop stays empty.
@@ -89,15 +75,9 @@ export function renderPortrait(t: Theme, ascii: string): string {
     for (let k = 2; k < COVERAGE.length; k++) if (Math.abs(COVERAGE[k] - want) < Math.abs(COVERAGE[best] - want)) best = k;
     return RAMP[best];
   };
-  const lines = ascii
-    .replace(/\s+$/, '')
-    .split('\n')
-    .map((line) => (t.name === 'dark' ? [...line].map(flip).join('') : line));
-  const cols = Math.max(...lines.map((l) => l.length));
+  const lines = portraitLines(ascii).map((line) => (t.name === 'dark' ? [...line].map(flip).join('') : line));
   const { size, lineHeight } = PORTRAIT;
   const charWidth = size * CHAR;
-  const x = (WIDTH - cols * charWidth) / 2;
-  const top = 96;
   // Glyph ink alone only spans about 5% to 30% coverage, so each ramp level
   // also gets its own opacity, which widens the tonal range enough for the
   // eyes and beard to read. Each run of one level is a tspan with its own x,
@@ -112,10 +92,38 @@ export function renderPortrait(t: Theme, ascii: string): string {
     })
     .filter(Boolean)
     .join('\n');
-  const opacity = Array.from({ length: levels }, (_, n) => `.l${n + 1}{fill-opacity:${(0.3 + (0.7 * n) / (levels - 1)).toFixed(2)}}`).join('');
-  const height = top + lines.length * lineHeight + 20;
-  const body = [prompt(PAD, 68, 'cat portrait.txt'), `<style>${opacity}</style>`, `<g class="p" font-size="${size}">`, rows, '</g>'].join('\n');
-  return frame(t, Math.ceil(height), '~/portrait.txt', 'ASCII portrait of Bregor Axhimusa', body);
+  // At this small size the glyph shapes blur into texture, so opacity does most
+  // of the shading: from 8% for the sparsest level up a curve to full ink.
+  const opacity = Array.from({ length: levels }, (_, n) => `.l${n + 1}{fill-opacity:${(0.08 + 0.92 * (n / (levels - 1)) ** 1.6).toFixed(2)}}`).join('');
+  return [`<style>${opacity}</style>`, `<g class="p" font-size="${size}">`, rows, '</g>'].join('\n');
+}
+
+const portraitLines = (ascii: string) => ascii.replace(/\s+$/, '').split('\n');
+
+// Top card, split like a terminal with two panes: whoami and the B/A mark on
+// the left, the ASCII portrait on the right.
+export function renderHeader(t: Theme, name: string, role: string, location: string, ascii: string): string {
+  const size = 15;
+  const promptWidth = 'bregor@github ~ $ '.length * size * CHAR;
+  const lines = portraitLines(ascii);
+  const artWidth = Math.max(...lines.map((l) => l.length)) * PORTRAIT.size * CHAR;
+  const artHeight = lines.length * PORTRAIT.lineHeight;
+  const split = WIDTH - 2 * PAD - artWidth;
+  const height = Math.ceil(Math.max(330, BAR + artHeight + 2 * PAD));
+  // The first baseline sits one line below the top edge of the art.
+  const artTop = (BAR + height - artHeight) / 2 + PORTRAIT.lineHeight * 0.8;
+  const body = [
+    prompt(PAD, 76, 'whoami', size),
+    `<text x="${PAD}" y="132" font-size="40" class="b">${esc(name)}</text>`,
+    `<text x="${PAD}" y="168" font-size="19">${esc(role)}</text>`,
+    `<text x="${PAD}" y="198" font-size="16" class="m" xml:space="preserve"><tspan class="a">@</tspan> ${esc(location)}</text>`,
+    mark(t, PAD, 222, 54),
+    prompt(PAD, height - 30, '', size),
+    cursor(t, PAD + promptWidth, height - 30, size),
+    `<path d="M${split} ${BAR}V${height - 1}" stroke="${t.line}"/>`,
+    portrait(t, ascii, WIDTH - PAD - artWidth, artTop),
+  ].join('\n');
+  return frame(t, height, 'bregor@github: ~', `${name}, ${role}, ${location}, with an ASCII portrait`, body);
 }
 
 export function renderHeatmap(t: Theme, stats: Stats): string {

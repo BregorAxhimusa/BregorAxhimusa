@@ -13,8 +13,9 @@ import { CHAR, COVERAGE, PORTRAIT, RAMP } from './theme.ts';
 // The studio backdrop is a flat, colourless light grey (lightness about 0.83).
 const BACKDROP_MAX_SATURATION = 0.08;
 const BACKDROP_LIGHTNESS = [0.68, 0.95];
-// Head and shoulders of the 460x460 portfolio photo, as fractions of its size.
-const CROP = { left: 0.25, top: 0.01, width: 0.46, height: 0.5 };
+// Head and hood of the 460x460 portfolio photo, as fractions of its size; tight
+// enough that the face fills most of the 64 columns.
+const CROP = { left: 0.29, top: 0.01, width: 0.4, height: 0.47 };
 // The photo is lit from one side, so half the face is washed out and half in
 // shadow. The shading keeps only DETAIL_BASE of the plain grey and takes the
 // rest from the difference to a blur of DETAIL_SIGMA source pixels, amplified
