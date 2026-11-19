@@ -1,7 +1,7 @@
 // SVG renderers. Every card shares one terminal frame and is drawn twice, once
 // per theme; README.md switches between them with <picture>.
 
-import { CHAR, FONT, type Theme } from './theme.ts';
+import { CHAR, COVERAGE, FONT, PORTRAIT, RAMP, type Theme } from './theme.ts';
 import { addDays, levelFor, levelThresholds, monthLabel, weekdayMondayFirst, type Stats } from './stats.ts';
 
 export const WIDTH = 860;
@@ -30,12 +30,16 @@ function mark(t: Theme, x: number, y: number, height: number): string {
   return `<svg x="${x}" y="${y}" width="${width.toFixed(1)}" height="${height}" viewBox="${MARK_VIEWBOX}"><path fill="${t.fg}" d="${MARK_LETTERS}"/><path fill="${t.accent}" d="${MARK_SLASH}"/></svg>`;
 }
 
+// Empty space above each card, so stacked cards never touch even when GitHub
+// scales them down to phone width (3 units is still over 1px at 360px wide).
+const GAP = 3;
+
 function frame(t: Theme, height: number, title: string, label: string, body: string): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${height}" viewBox="0 0 ${WIDTH} ${height}" role="img" aria-label="${esc(label)}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${height + GAP}" viewBox="0 ${-GAP} ${WIDTH} ${height + GAP}" role="img" aria-label="${esc(label)}">
 <title>${esc(label)}</title>
 <style>
 text{font-family:${FONT};fill:${t.fg}}
-.m{fill:${t.muted}}.a{fill:${t.accentText}}.b{font-weight:700}
+.m{fill:${t.muted}}.a{fill:${t.accentText}}.b{font-weight:700}.p text{fill:${t.portrait}}
 .cur{animation:blink 1.1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.cur{animation:none}}
@@ -73,31 +77,44 @@ export function renderHeader(t: Theme, name: string, role: string, location: str
 }
 
 export function renderPortrait(t: Theme, ascii: string): string {
-  const lines = ascii.replace(/\s+$/, '').split('\n');
+  // portrait.txt is ink on paper; on the dark card each subject glyph becomes
+  // the one with the opposite coverage, so bright skin lights up and dark hair
+  // goes sparse. The backdrop stays empty.
+  const min = COVERAGE[1];
+  const max = COVERAGE[COVERAGE.length - 1];
+  const flip = (ch: string) => {
+    if (ch === ' ') return ch;
+    const want = min + max - COVERAGE[RAMP.indexOf(ch)];
+    let best = 1;
+    for (let k = 2; k < COVERAGE.length; k++) if (Math.abs(COVERAGE[k] - want) < Math.abs(COVERAGE[best] - want)) best = k;
+    return RAMP[best];
+  };
+  const lines = ascii
+    .replace(/\s+$/, '')
+    .split('\n')
+    .map((line) => (t.name === 'dark' ? [...line].map(flip).join('') : line));
   const cols = Math.max(...lines.map((l) => l.length));
-  const size = 12;
-  const lineHeight = 12.5;
+  const { size, lineHeight } = PORTRAIT;
   const charWidth = size * CHAR;
   const x = (WIDTH - cols * charWidth) / 2;
   const top = 96;
-  // Every glyph gets its own x, so the art lines up whatever monospace font
-  // the viewer has; spaces are simply left out.
+  // Glyph ink alone only spans about 5% to 30% coverage, so each ramp level
+  // also gets its own opacity, which widens the tonal range enough for the
+  // eyes and beard to read. Each run of one level is a tspan with its own x,
+  // so the art stays aligned whatever monospace font the viewer has.
+  const levels = RAMP.length - 1;
   const rows = lines
     .map((line, i) => {
-      const xs: string[] = [];
-      let text = '';
-      for (let c = 0; c < line.length; c++) {
-        if (line[c] === ' ') continue;
-        xs.push((x + c * charWidth).toFixed(1));
-        text += line[c];
-      }
-      if (!text) return '';
-      return `<text x="${xs.join(' ')}" y="${(top + i * lineHeight).toFixed(1)}">${esc(text)}</text>`;
+      const runs = [...line.matchAll(/(\S)\1*/g)].map(
+        (m) => `<tspan class="l${RAMP.indexOf(m[1])}" x="${(x + m.index * charWidth).toFixed(1)}">${esc(m[0])}</tspan>`,
+      );
+      return runs.length ? `<text y="${(top + i * lineHeight).toFixed(1)}">${runs.join('')}</text>` : '';
     })
     .filter(Boolean)
     .join('\n');
-  const height = top + lines.length * lineHeight + 24;
-  const body = [prompt(PAD, 68, 'cat portrait.txt'), `<g class="a" font-size="${size}" style="fill:${t.accentText}">`, rows, '</g>'].join('\n');
+  const opacity = Array.from({ length: levels }, (_, n) => `.l${n + 1}{fill-opacity:${(0.3 + (0.7 * n) / (levels - 1)).toFixed(2)}}`).join('');
+  const height = top + lines.length * lineHeight + 20;
+  const body = [prompt(PAD, 68, 'cat portrait.txt'), `<style>${opacity}</style>`, `<g class="p" font-size="${size}">`, rows, '</g>'].join('\n');
   return frame(t, Math.ceil(height), '~/portrait.txt', 'ASCII portrait of Bregor Axhimusa', body);
 }
 

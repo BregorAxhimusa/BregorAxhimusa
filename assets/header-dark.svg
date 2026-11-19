@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="284" viewBox="0 0 860 284" role="img" aria-label="Bregor Axhimusa, Full-Stack Engineer: Web, Mobile and Backend, Prishtinë, Kosovo">
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="287" viewBox="0 -3 860 287" role="img" aria-label="Bregor Axhimusa, Full-Stack Engineer: Web, Mobile and Backend, Prishtinë, Kosovo">
 <title>Bregor Axhimusa, Full-Stack Engineer: Web, Mobile and Backend, Prishtinë, Kosovo</title>
 <style>
 text{font-family:ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;fill:#f2f2f2}
-.m{fill:#8c8c8c}.a{fill:#c8f04b}.b{font-weight:700}
+.m{fill:#8c8c8c}.a{fill:#c8f04b}.b{font-weight:700}.p text{fill:#c8f04b}
 .cur{animation:blink 1.1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.cur{animation:none}}
