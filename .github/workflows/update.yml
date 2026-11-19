@@ -1,0 +1,59 @@
+name: Update profile
+
+on:
+  schedule:
+    # GitHub cron runs in UTC. 03:17 in Europe/Tirane is 01:17 UTC in summer
+    # (CEST) and 02:17 UTC in winter (CET); the guard below keeps only one.
+    - cron: '17 1 * * *'
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-profile
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check it is 03:17 in Tirane
+        id: guard
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          if [ -z "$SCHEDULE" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          offset=$(TZ=Europe/Tirane date +%z)
+          if { [ "$offset" = "+0200" ] && [ "$SCHEDULE" = "17 1 * * *" ]; } || \
+             { [ "$offset" = "+0100" ] && [ "$SCHEDULE" = "17 2 * * *" ]; }; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.run == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.run == 'true'
+        with:
+          node-version: 24
+
+      - name: Generate SVGs
+        if: steps.guard.outputs.run == 'true'
+        env:
+          # PROFILE_TOKEN is optional; the workflow token reads public calendars.
+          GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN || github.token }}
+        run: node scripts/generate.ts
+
+      - name: Commit changes
+        if: steps.guard.outputs.run == 'true'
+        run: |
+          if [ -z "$(git status --porcelain assets)" ]; then echo "No changes."; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets
+          git commit -m 'Update profile stats'
+          git push

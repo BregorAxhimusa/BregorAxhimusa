@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="284" viewBox="0 0 860 284" role="img" aria-label="Bregor Axhimusa, Full-Stack Engineer: Web, Mobile and Backend, Prishtinë, Kosovo">
+<title>Bregor Axhimusa, Full-Stack Engineer: Web, Mobile and Backend, Prishtinë, Kosovo</title>
+<style>
+text{font-family:ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;fill:#f2f2f2}
+.m{fill:#8c8c8c}.a{fill:#c8f04b}.b{font-weight:700}
+.cur{animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cur{animation:none}}
+</style>
+<rect x="0.5" y="0.5" width="859" height="283" rx="12" fill="#151515" stroke="#2b2b2b"/>
+<path d="M1 38H859" stroke="#2b2b2b"/>
+<rect x="28" y="15" width="8" height="8" fill="#c8f04b"/>
+<text x="46" y="23.5" font-size="13" class="m">bregor@github: ~</text>
+<text x="28" y="76" font-size="15" xml:space="preserve"><tspan class="a">bregor@github</tspan><tspan class="m"> ~ $ </tspan>whoami</text>
+<text x="28" y="134" font-size="40" class="b">Bregor Axhimusa</text>
+<text x="28" y="172" font-size="20">Full-Stack Engineer: Web, Mobile and Backend</text>
+<text x="28" y="204" font-size="16" class="m" xml:space="preserve"><tspan class="a">@</tspan> Prishtinë, Kosovo</text>
+<text x="28" y="252" font-size="15" xml:space="preserve"><tspan class="a">bregor@github</tspan><tspan class="m"> ~ $ </tspan></text>
+<rect class="cur" x="190" y="240" width="9" height="15" fill="#c8f04b"/>
+<svg x="632" y="82" width="200.5" height="130" viewBox="62 -942 1715 1112"><path fill="#f2f2f2" d="M622 -191Q622 -103 560.5 -51.5Q499 0 389 0H62V-702H378Q485 -702 545.5 -653Q606 -604 606 -520Q606 -458 573.5 -417Q541 -376 487 -360Q548 -347 585 -299.5Q622 -252 622 -191ZM233 -418H345Q387 -418 409.5 -436.5Q432 -455 432 -491Q432 -527 409.5 -546Q387 -565 345 -565H233ZM449 -214Q449 -251 424.5 -272Q400 -293 357 -293H233V-138H359Q402 -138 425.5 -157.5Q449 -177 449 -214Z M1554 -124H1292L1250 0H1071L1325 -702H1523L1777 0H1596ZM1510 -256 1423 -513 1337 -256Z"/><path fill="#c8f04b" d="M1036 -942 762 170H672L945 -942Z"/></svg>
+</svg>
